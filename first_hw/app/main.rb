@@ -12,4 +12,3 @@ end
 ActiveRecord::Base.establish_connection(db_configuration["development"])
 
 Crawler.new.()
-binding.pry
