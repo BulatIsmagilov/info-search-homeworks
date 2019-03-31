@@ -42,7 +42,7 @@ def get_articles(conn, words):
             terms[term_text] = tf_idf
     return articles
 
-def get_query_vector(words):
+def get_query_vector(conn, words):
     vector = {}
     for word in words:
         with conn.cursor() as cur:
@@ -52,7 +52,7 @@ def get_query_vector(words):
         vector[word] = idf
     return vector
 
-def get_urls_by_article_ids(ids_and_cos):
+def get_urls_by_article_ids(conn, ids_and_cos):
     url_cos = {}
     for _id, cos in ids_and_cos:
         with conn.cursor() as cur:
