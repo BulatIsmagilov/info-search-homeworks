@@ -16,7 +16,21 @@ def proccess_text(query: str):
     stem = SnowballStemmer('russian')
     return [stem.stem(word) for word in words]
 
-def get_articles(words):
+def get_articlies_count(conn):
+    with conn.cursor() as cur:
+        cur.execute('SELECT count(*) FROM articles;')
+        return cur.fetchone()[0]
+
+def get_article_word_count(conn):
+    article_words_count = {}
+    with conn.cursor() as cur:
+        cur.execute('SELECT article_id, count(term) as c FROM words_porter GROUP BY article_id;')
+        for row in cur:
+            article_words_count[row[0]] = row[1]
+        return article_words_count
+
+
+def get_articles(conn, words):
     words = tuple(words)
     articles = {}
     with conn.cursor() as cur: 
@@ -48,7 +62,7 @@ def get_urls_by_article_ids(ids_and_cos):
     return url_cos
 
 
-def tf(term, article_id):
+def tf(conn, term, article_id):
     with conn.cursor() as cur:
         cur.execute("select count(id) from words_porter group by term, article_id HAVING term = %s AND article_id=%s;", (term, article_id))
         try:
@@ -59,11 +73,11 @@ def tf(term, article_id):
     tf = document_word_includes_count / article_words_count[article_id]
     return tf
 
-def idf(term):
+def idf(conn, term):
     with conn.cursor() as cur:
         cur.execute("SELECT count(*) FROM (SELECT DISTINCT article_id FROM words_porter WHERE term = %s) a", (term,))
         word_included_article = cur.fetchone()[0]
-    
+
     global articles_count
     idf = math.log2((articles_count - word_included_article + 0.5) / (word_included_article + 0.5))
     return idf
