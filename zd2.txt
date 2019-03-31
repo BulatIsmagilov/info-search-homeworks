@@ -1,0 +1,16 @@
+1. Выделить из базы список всех встречающихся слов.
+2. Привести к нижнему регистру.
+3. Убрать стоп слова. 
+4. Лемматизировать с использованием стеммера Портера и MyStem.
+
+https://github.com/stopwords-iso/stopwords-ru
+
+words_porter
+id
+term varchar 64
+articles_id int
+
+words_mystem
+id
+term varchar 64
+articles_id int

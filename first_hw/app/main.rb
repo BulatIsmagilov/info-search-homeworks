@@ -2,6 +2,7 @@ require 'active_record'
 require_relative './models/student'
 require_relative './models/article'
 require_relative './services/crawler'
+require_relative './services/lemmatizator'
 require 'pry'
 
 def db_configuration
@@ -10,5 +11,8 @@ def db_configuration
 end
 
 ActiveRecord::Base.establish_connection(db_configuration["development"])
+binding.pry
 
-Crawler.new.()
+# Crawler.new.()
+Lemmatizator.new.()
+

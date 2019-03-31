@@ -1,0 +1,17 @@
+﻿Задание 4.
+Посчитать tf-idf и записать в таблицу article_term
+tf вычисляется из 2 таблицы words_porter/words_mystem
+
+articles
+id uuid primary ai
+title varchar 256
+keywords varchar 256 % в строку отделяется точкой с запятой 
+content text
+url varchar 128
+student_id
+
+
+article_term
+	article_id uuid
+	term_id	uuid
+	tf-idf
