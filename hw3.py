@@ -7,6 +7,7 @@ import re
 import functools
 import lib
 from lib import proccess_text
+from lib import sort
 import math
 import uuid
 
@@ -37,18 +38,8 @@ conn = psycopg2.connect(database="info_search_development", user="ismglv", passw
 #     conn.commit()
 # -----------------------
 
-def sort(words):
-    sql = "select count(article_id) from article_term article INNER JOIN (select * from terms_list where term_text = %s) t ON t.term_id = article.term_id ;"
-    with conn.cursor() as cur:
-        word_includes = []
-        for word in words:
-            cur.execute(sql, (word,))
-            includes = cur.fetchone()[0]
-            word_includes.append((word, includes))
-        return [i[0] for i in sorted(word_includes, key= lambda w: w[1], reverse=True)]
-
 def search(query: str):
-    queries = sort(proccess_text(query))
+    queries = sort(conn, proccess_text(query))
     sql = "select article_id from article_term article INNER JOIN (select * from terms_list where term_text = %s) t ON article.term_id = t.term_id;"
     includes = []
     for word in queries:

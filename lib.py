@@ -5,8 +5,15 @@ nltk.download("stopwords")
 from nltk.stem.snowball import SnowballStemmer
 import re
 import functools
+import math
 
 stopwords = set(stopwords.words('russian'))
+
+def count_cos_measure(v1, v2):
+    pairs = zip(v1, v2)
+    num = sum(pair[0] * pair[1] for pair in pairs)
+    den = math.sqrt(sum(el * el for el in v1)) * math.sqrt(sum(el * el for el in v2))
+    return num/den if den != 0 else 0
 
 def proccess_text(query: str):
     words = re.split(r'\W+', query)
@@ -81,4 +88,15 @@ def idf(conn, term):
     global articles_count
     idf = math.log2((articles_count - word_included_article + 0.5) / (word_included_article + 0.5))
     return idf
+
+
+def sort(conn, words):
+    sql = "select count(article_id) from article_term article INNER JOIN (select * from terms_list where term_text = %s) t ON t.term_id = article.term_id ;"
+    with conn.cursor() as cur:
+        word_includes = []
+        for word in words:
+            cur.execute(sql, (word,))
+            includes = cur.fetchone()[0]
+            word_includes.append((word, includes))
+        return [i[0] for i in sorted(word_includes, key= lambda w: w[1], reverse=True)]
 
