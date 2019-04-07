@@ -31,10 +31,6 @@ avgdl = functools.reduce(lambda x, y: x + y, article_words_count.values()) / art
 def search(query):
     words = proccess_text(query)
     articles = get_articles(conn, words)
-    global articles_count
-    global avgdl
-    global k
-    global b
 
     article_score = []
     for article in articles:
@@ -49,12 +45,8 @@ def search(query):
 
     url_cos = get_urls_by_article_ids(conn, article_score)
 
-    i = 0
-    for url, cos in url_cos.items():
+    for url, cos in url_cos.items()[0:10]:
         print(url, cos)
-        i += 1
-        if i == 10:
-            break
 
 if __name__ == "__main__":
     import sys
