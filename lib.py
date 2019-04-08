@@ -100,3 +100,28 @@ def sort(conn, words):
             word_includes.append((word, includes))
         return [i[0] for i in sorted(word_includes, key= lambda w: w[1], reverse=True)]
 
+
+def get_matrices(cur, docs, query):
+    cv = CountVectorizer(tokenizer=lambda doc: doc, lowercase=False)
+    words_in_articles = []
+    for doc in docs:
+        cur.execute('select term from words_porter where article_id = %s', (doc,))
+        words = [word[0] for word in cur.fetchall()]
+        words_in_articles.append(words)
+
+    a_matrix = cv.fit_transform(words_in_articles).toarray().transpose()
+    query_vector = cv.transform([query]).toarray()  # already transposed
+    return a_matrix, query_vector
+
+
+def rank_articles(cur, q, v, docs):
+    result = defaultdict(float)
+    q = np.diagonal(q)
+    for i, doc in enumerate(docs):
+        cur.execute('select url from articles where id = %s', (doc,))
+        url = cur.fetchone()[0]
+
+        similarity = count_cos_measure(q, v[i])
+        result[url] = similarity
+    return result
+
