@@ -2,7 +2,6 @@ import psycopg2
 import math
 import functools
 from nltk.corpus import stopwords
-# стеммер Портера предназначен только для английских слов, Snowball стеммер является развитием стеммера Портера
 from nltk.stem.snowball import SnowballStemmer 
 import re
 
